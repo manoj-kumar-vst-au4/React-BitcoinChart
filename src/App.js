@@ -11,16 +11,20 @@ export default class App extends Component {
   }
 
   componentDidMount= async()=>{
-    
-    let current = await fetch("https://api.coindesk.com/v1/bpi/currentprice.json");
-    let data = await current.json();
+    this.getData=async()=>{
+      let current = await fetch("https://api.coindesk.com/v1/bpi/currentprice.json");
+      let data = await current.json();
+      this.setState({
+        currentData: data.bpi.USD,
+      })
+    }
     let historyData = await fetch("https://api.coindesk.com/v1/bpi/historical/close.json");
     let datas = await historyData.json();
     let datasKeys = Object.keys(datas.bpi);
     let datasValues = Object.values(datas.bpi);
-
+    await this.getData();
+    this.refresh = setInterval(() => this.getData(), 1000);
     await this.setState({
-      currentData: data.bpi.USD,
       chartData: { 
         xaxis:{
           categories: datasKeys
